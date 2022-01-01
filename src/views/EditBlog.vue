@@ -46,6 +46,8 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 import BlogCoverPreview from "../components/BlogCoverPreview.vue";
 import Loading from "../components/Loading.vue";
 import firebase from "firebase/app";
@@ -103,6 +105,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(["updatePost"]),
     fileChange() {
       this.file = this.$refs.blogPhoto.files[0];
       const fileName = this.file.name;
@@ -158,8 +161,8 @@ export default {
                 blogTitle: this.blogTitle
               });
 
-              await this.$store.dispatch("updatePost",this.routerID);
-
+              //await this.$store.dispatch("updatePost",this.routeID);
+              await this.updatePost(this.routeID);
               this.loading = false;
               this.$router.push({
                 name: "ViewBlog",
@@ -174,7 +177,8 @@ export default {
           blogTitle: this.blogTitle,
           blogHTML: this.blogHTML
         });
-        await this.$store.dispatch("updatePost", this.routeID);
+        //await this.$store.dispatch("updatePost", this.routeID);
+        await this.updatePost(this.routeID);
         this.loading = false;
         this.$router.push({
           name: "ViewBlog",

@@ -2,7 +2,7 @@
   <div class="blog-card">
     <div class="icons" v-show="editPost">
       <div class="icon" @click="editBlog"><Edit class="edit" /></div>
-      <div class="icon" @click="deletePost"><Delete class="delete" /></div>
+      <div class="icon" @click="deleteBlog"><Delete class="delete" /></div>
     </div>
     <img :src="post.blogCoverPhoto" alt="" />
     <div class="info">
@@ -24,6 +24,8 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 import Arrow from "../assets/Icons/arrow-right-light.svg";
 import Edit from "../assets/Icons/edit-regular.svg";
 import Delete from "../assets/Icons/trash-regular.svg";
@@ -41,8 +43,10 @@ export default {
     }
   },
   methods: {
-    deletePost() {
-      this.$store.dispatch("deletePost", this.post.blogID);
+    ...mapActions(["deletePost"]),
+    deleteBlog() {
+      //this.$store.dispatch("deletePost", this.post.blogID);
+      this.deletePost(this.post.blogID);
     },
     editBlog() {
       this.$router.push({

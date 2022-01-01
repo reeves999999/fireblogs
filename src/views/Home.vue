@@ -28,6 +28,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 import BlogPost from "../components/BlogPost.vue";
 import BlogCard from "../components/BlogCard.vue";
 import Arrow from "../assets/Icons/arrow-right-light.svg";
@@ -50,12 +52,13 @@ export default {
     };
   },
   computed: {
-    blogPostsFeed() {
-      return this.$store.getters.blogPostsFeed;
-    },
-    blogPostsCards() {
-      return this.$store.getters.blogPostsCards;
-    },
+    ...mapGetters(["blogPostsFeed", "blogPostsCards"]),
+    // blogPostsFeed() {
+    //   return this.$store.getters.blogPostsFeed;
+    // },
+    // blogPostsCards() {
+    //   return this.$store.getters.blogPostsCards;
+    // },
     user() {
       return this.$store.state.user;
     }

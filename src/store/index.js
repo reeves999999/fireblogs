@@ -38,12 +38,10 @@ export default new Vuex.Store({
   mutations: {
     newBlogPost(state, payload) {
       state.blogHTML = payload;
-      console.log(state.blogHTML);
     },
     updateBlogTitle(state, payload) {
       state.blogTitle = payload;
     },
-
     fileNameChange(state, payload) {
       state.blogPhotoName = payload;
     },
@@ -53,7 +51,6 @@ export default new Vuex.Store({
     openPhotoPreview(state) {
       state.blogPhotoPreview = !state.blogPhotoPreview;
     },
-
     toggleEditPost(state, payload) {
       state.editPost = payload;
     },
@@ -87,14 +84,16 @@ export default new Vuex.Store({
       state.profileUserName = payload;
     },
     filterBlogPost(state, payload) {
-      state.blogPosts =state.blogPosts.filter(post => post.blogID !== payload)
+      state.blogPosts = state.blogPosts.filter(
+        (post) => post.blogID !== payload
+      );
     },
     setBlogState(state, payload) {
       state.blogTitle = payload.blogTitle;
       state.blogHTML = payload.blogHTML;
       state.blogPhotoFileURL = payload.blogCoverPhoto;
       state.blogPhotoName = payload.blogCoverPhotoName;
-    }
+    },
   },
   actions: {
     async getCurrentUser({ commit }, user) {

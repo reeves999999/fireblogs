@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 import Modal from "../components/Modal";
 import adminIcon from "../assets/Icons/user-crown-light.svg";
 export default {
@@ -51,11 +53,13 @@ export default {
     };
   },
   methods: {
+    ...mapActions(['updateUserSettings']),
     closeModal() {
       this.modalActive = !this.modalActive;
     },
     updateProfile() {
-      this.$store.dispatch("updateUserSettings");
+      //this.$store.dispatch("updateUserSettings");
+      this.updateUserSettings();
       this.modalActive = true;
     }
   },

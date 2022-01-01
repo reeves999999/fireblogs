@@ -9,6 +9,8 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 import Navigation from "./components/Navigation.vue";
 import Footer from "./components/Footer.vue";
 
@@ -28,6 +30,7 @@ export default {
   },
   mounted() {},
   methods: {
+    ...mapActions(["getCurrentUser", "getPost"]),
     checkRoute() {
       if (
         this.$route.name === "Login" ||
@@ -44,11 +47,13 @@ export default {
     firebase.auth().onAuthStateChanged(async user => {
       this.$store.commit("updateUser", user);
       if (user) {
-        this.$store.dispatch("getCurrentUser", user);
+        //this.$store.dispatch("getCurrentUser", user);
+        this.getCurrentUser(user);
       }
     });
     this.checkRoute();
-    this.$store.dispatch("getPost");
+    //this.$store.dispatch("getPost");
+    this.getPost();
   },
   watch: {
     $route() {
