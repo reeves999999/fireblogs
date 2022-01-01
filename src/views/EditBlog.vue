@@ -36,9 +36,9 @@
         />
       </div>
       <div class="blog-actions">
-        <button @click="uploadBlog">Publish Blog</button>
+        <button @click="updateBlog">Update Blog</button>
         <router-link :to="{ name: 'BlogPreview' }" class="router-button"
-          >Post Preview</router-link
+          >Preview Changes</router-link
         >
       </div>
     </div>
@@ -69,7 +69,9 @@ export default {
           imageResize: {}
         }
       },
-      loading: null
+      loading: null,
+      routeID: null,
+      currentBlog: null
     };
   },
   components: {
@@ -128,7 +130,8 @@ export default {
         }
       );
     },
-    uploadBlog() {
+    async updateBlog() {
+      const database = await db.collection("blogPosts").doc(this.routeID);
       if (this.blogTitle.length !== 0 && this.blogHTML.length !== 0) {
         if (this.file) {
           this.loading = true;
@@ -147,20 +150,15 @@ export default {
             },
             async () => {
               const downloadURL = await docRef.getDownloadURL();
-              const timestamp = await Date.now();
-              const database = db.collection("blogPosts").doc();
 
-              await database.set({
-                blogID: database.id,
+              await database.update({
                 blogHTML: this.blogHTML,
                 blogCoverPhoto: downloadURL,
                 blogCoverPhotoName: this.blogCoverPhotoName,
-                blogTitle: this.blogTitle,
-                profileId: this.profileId,
-                date: timestamp
+                blogTitle: this.blogTitle
               });
 
-              await this.$store.dispatch("getPost");
+              await this.$store.dispatch("updatePost",this.routerID);
 
               this.loading = false;
               this.$router.push({
@@ -171,11 +169,17 @@ export default {
           );
           return;
         }
-        this.error = true;
-        this.errorMsg = "missing image file";
-        setTimeout(() => {
-          this.error = false;
-        }, 5000);
+        this.loading = true;
+        await database.update({
+          blogTitle: this.blogTitle,
+          blogHTML: this.blogHTML
+        });
+        await this.$store.dispatch("updatePost", this.routeID);
+        this.loading = false;
+        this.$router.push({
+          name: "ViewBlog",
+          params: { blogid: database.id }
+        });
         return;
       }
       this.error = true;
@@ -185,6 +189,13 @@ export default {
       }, 5000);
       return;
     }
+  },
+  async mounted() {
+    this.routeID = this.$route.params.blogid;
+    this.currentBlog = await this.$store.state.blogPosts.find(
+      post => post.blogID === this.routeID
+    );
+    this.$store.commit("setBlogState", this.currentBlog);
   }
 };
 </script>

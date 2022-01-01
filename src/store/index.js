@@ -9,30 +9,8 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    sampleBlogCards: [
-      {
-        blogTitle: "Card 1",
-        blogCoverPhoto: "stock-1",
-        blogDate: "1 May, 2021",
-      },
-      {
-        blogTitle: "Card 2",
-        blogCoverPhoto: "stock-2",
-        blogDate: "1 May, 2021",
-      },
-      {
-        blogTitle: "Card 3",
-        blogCoverPhoto: "stock-3",
-        blogDate: "1 May, 2021",
-      },
-      {
-        blogTitle: "Card 4",
-        blogCoverPhoto: "stock-4",
-        blogDate: "1 May, 2021",
-      },
-    ],
     blogPosts: [],
-    postLoaded:null,
+    postLoaded: null,
     blogHTML: "Write your blog title here",
     blogTitle: "",
     blogPhotoName: "",
@@ -49,7 +27,13 @@ export default new Vuex.Store({
     profileInitials: null,
   },
   getters: {
-    
+    blogPostsFeed(state) {
+      return state.blogPosts.slice(0, 2);
+    },
+
+    blogPostsCards(state) {
+      return state.blogPosts.slice(2, 6);
+    },
   },
   mutations: {
     newBlogPost(state, payload) {
@@ -102,6 +86,15 @@ export default new Vuex.Store({
     changeUserName(state, payload) {
       state.profileUserName = payload;
     },
+    filterBlogPost(state, payload) {
+      state.blogPosts =state.blogPosts.filter(post => post.blogID !== payload)
+    },
+    setBlogState(state, payload) {
+      state.blogTitle = payload.blogTitle;
+      state.blogHTML = payload.blogHTML;
+      state.blogPhotoFileURL = payload.blogCoverPhoto;
+      state.blogPhotoName = payload.blogCoverPhotoName;
+    }
   },
   actions: {
     async getCurrentUser({ commit }, user) {
@@ -129,19 +122,29 @@ export default new Vuex.Store({
       const database = await db.collection("blogPosts").orderBy("date", "desc");
       const dbResults = await database.get();
       dbResults.forEach((doc) => {
-        if (!state.blogPosts.some(post => post.blogId === doc.id)) {
+        if (!state.blogPosts.some((post) => post.blogId === doc.id)) {
           const data = {
             blogID: doc.data().blogID,
             blogHTML: doc.data().blogHTML,
             blogCoverPhoto: doc.data().blogCoverPhoto,
             blogTitle: doc.data().blogTitle,
-            blogDate: doc.data().date
+            blogDate: doc.data().date,
+            blogCoverPhotoName: doc.data().blogCoverPhotoName,
           };
-          this.blogPosts.push(data);
+          state.blogPosts.push(data);
         }
       });
       state.postLoaded = true;
-    }
+    },
+    async deletePost({ commit }, payload) {
+      const getPost = await db.collection("blogPosts").doc(payload);
+      await getPost.delete();
+      commit("filterBlogPost", payload);
+    },
+    async updatePost({ commit, dispatch }, payload) {
+      commit("filterBlogPost", payload);
+      await dispatch("getPost");
+    },
   },
   modules: {},
 });
